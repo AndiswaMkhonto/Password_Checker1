@@ -1,15 +1,24 @@
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PasswordChecker {
+    
+    static Pattern digitCasePatten = Pattern.compile("[0-9]+");
+    static Pattern UpperCasePatten = Pattern.compile(".*[A-Z].*");
+    static Pattern specialCharPatten = Pattern.compile("[!@#$%^&()_~.?/,*;+=-]" , Pattern.CASE_INSENSITIVE);
+    static Pattern lowerCasePatten = Pattern.compile(".*[a-z].*");
+
 
     private static ArrayList<String> listOfErrors= new ArrayList<>();
-    public static boolean isValid(String yourPassword ){
-        Pattern specialCharPatten = Pattern.compile("[$&+,:;=?@#|'<>.^*()%!-]", Pattern.CASE_INSENSITIVE);
-        Pattern UpperCasePatten = Pattern.compile("[A-Z]");
-        Pattern lowerCasePatten = Pattern.compile("[a-z]");
-        Pattern digitCasePatten = Pattern.compile("[0-9]");
+    public static boolean passwordIsValid(String yourPassword ){
+
+
+        Matcher mac = digitCasePatten.matcher(yourPassword);
+        Matcher letters = UpperCasePatten.matcher(yourPassword);
+        Matcher lowc = lowerCasePatten.matcher(yourPassword);
+        Matcher special = specialCharPatten.matcher(yourPassword);
+
 
         boolean flag = true;
         if(yourPassword.isEmpty()){
@@ -45,50 +54,32 @@ public class PasswordChecker {
         }
         return flag;
     }
-    public static boolean passwordIsOkay(){
-        boolean flag = false;
-
-        if(listOfErrors.size()<=3){
-            flag = true;
-        }
-        return flag;
-
-    }
-    public static boolean PasswordNeverOkay(String password){
-        boolean flag = false;
-        if(password.isEmpty() && password.length() < 8) {
-            return flag;
-        }else{
-            System.out.println("Password meets condition 1 and 2");
-
-        }
-        return flag;
-    }
-
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        {
-            System.out.println("Please enter a  password : ");
-            String yourPassword = in.nextLine();
-            System.out.println();
+    public static boolean passwordIsOkay(String password){
 
 
-            try{
-                if(isValid(yourPassword )){
-                    System.out.println("Password is valid");
+
+        Matcher mac = digitCasePatten.matcher(password);
+        Matcher letters = UpperCasePatten.matcher(password);
+        Matcher special = specialCharPatten.matcher(password);
+        Matcher lower = lowerCasePatten.matcher(password);
+        try {
+            for (int i = 0; i < password.length(); i += 1) {
+                if (password.length() > 7) {
+                    if ((mac.find() && letters.find()) || (mac.find() && special.find()) ||
+                            (letters.find() && special.find()) || (lower.find() && letters.find()) ||
+                            (lower.find() && special.find()) || (mac.find() && lower.find())){
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 }
-                if(passwordIsOkay()){
-                    System.out.println("Password is okay");
-                }
-                if(PasswordNeverOkay(yourPassword)){
-                }
-            }catch(Exception e){
-                System.out.println(e.getMessage());
             }
-
         }
-
+        catch (Exception w){
+            System.out.println(w.getMessage());
+        }
+        return false;
 
     }
-
 }
